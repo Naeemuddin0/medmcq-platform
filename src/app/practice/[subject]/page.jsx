@@ -170,19 +170,19 @@ export default function SubjectPage({ params }) {
           </div>
         ) : question ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <p className="text-lg mb-6">{question.text}</p>
+            <p className="text-lg text-gray-900 dark:text-white mb-6">{question.text}</p>
             
             <div className="space-y-4">
               {question.options.map((option) => (
                 <button
                   key={option}
                   onClick={() => handleAnswer(option)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-colors duration-200 ${
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-colors duration-200 text-gray-900 dark:text-white font-medium ${
                     selectedAnswer === option
                       ? isCorrect
                         ? 'border-green-500 bg-green-50 dark:bg-green-900/50'
                         : 'border-red-500 bg-red-50 dark:bg-red-900/50'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 bg-white dark:bg-gray-800'
                   }`}
                   disabled={showExplanation}
                 >
@@ -202,8 +202,8 @@ export default function SubjectPage({ params }) {
 
             {showExplanation && (
               <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <p className="font-semibold mb-2">Explanation:</p>
-                <p>{question.explanation}</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-2">Explanation:</p>
+                <p className="text-gray-800 dark:text-gray-200">{question.explanation}</p>
                 <button
                   onClick={handleNext}
                   className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
