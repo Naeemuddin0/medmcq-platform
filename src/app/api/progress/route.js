@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/dbConnect.js';
 import Progress from '../../../models/Progress.js';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route.js';
+import { authOptions } from '../auth/[...nextauth]/authOptions.js';
 import MCQ from '../../../models/MCQ.js';
 import mongoose from 'mongoose';
 

@@ -3,7 +3,7 @@ import dbConnect from '../../../lib/dbConnect.js';
 import MCQ from '../../../models/MCQ.js';
 import Progress from '../../../models/Progress.js';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route.js';
+import { authOptions } from '../auth/[...nextauth]/authOptions.js';
 
 export async function GET(request) {
   await dbConnect();
