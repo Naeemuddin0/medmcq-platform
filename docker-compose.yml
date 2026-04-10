@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: your-dockerhub-username/medmcq-web:latest
+    container_name: medmcq-web
+    ports:
+      - "80:3000"
+    env_file:
+      - .env.local
+    environment:
+      - MONGODB_URI=mongodb://db:27017/medmcq-db
+      # Using standard EC2 IP for NextAuth
+      - NEXTAUTH_URL=http://ec2-204-236-199-231.compute-1.amazonaws.com
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mongo:6
+    container_name: medmcq-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
