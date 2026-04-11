@@ -19,6 +19,8 @@ pipeline {
         stage('Deploy Dev Environment') {
             steps {
                 echo 'Deploying Dev Environment with Docker Compose...'
+                // Ensure the environment file exists to prevent docker-compose failure
+                sh 'touch .env.local'
                 // Stop running instance and remove old containers
                 sh 'docker-compose -f docker-compose-dev.yml down'
                 // Re-launch development container in background decoupled from live Part I
