@@ -2,21 +2,15 @@ version: '3.8'
 
 services:
   web-dev:
-    image: node:20-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: medmcq-web-dev
-    working_dir: /app
-    volumes:
-      # Mount the source code replacing the container's contents
-      - .:/app
-      # Anonymous volumes to heavily prevent overwriting the node_modules and .next generated internally
-      - /app/node_modules
-      - /app/.next
     ports:
       - "3001:3000"
     env_file:
       - .env.local
-    # Ensure dependencies are present locally, then run dev server
-    command: /bin/sh -c "npm install && npm run dev"
+    # Injected by build-time if needed, but here we just rely on the env_file and Dockerfile defaults
     depends_on:
       - db-dev
     restart: unless-stopped
@@ -25,7 +19,6 @@ services:
     image: mongo:6
     container_name: medmcq-db-dev
     ports:
-      # Avoiding conflict with port 27017 from Part I
       - "27018:27017"
     volumes:
       - mongo-dev-data:/data/db
