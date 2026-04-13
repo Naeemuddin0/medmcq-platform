@@ -16,6 +16,7 @@ COPY . .
 COPY .env.local* ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV MONGODB_URI="mongodb://localhost:27017/dummy"
 RUN npm run build
 
 # Production image, copy all the files and run next
