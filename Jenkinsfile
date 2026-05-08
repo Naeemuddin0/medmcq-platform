@@ -5,13 +5,14 @@ pipeline {
         // Ensuring Docker behaves correctly in Jenkins executing environment
         DOCKER_BUILDKIT = 1
         COMPOSE_DOCKER_CLI_BUILD = 1
+        // Internal URL for the dev container within the Docker network
+        APP_URL = "http://medmcq-web-dev:3000"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                // The 'scm' object implicitly uses the repository Jenkins pulled the Jenkinsfile from.
                 checkout scm
             }
         }
@@ -19,12 +20,28 @@ pipeline {
         stage('Deploy Dev Environment') {
             steps {
                 echo 'Deploying Dev Environment with Docker Compose...'
-                // Ensure the environment file exists to prevent docker-compose failure
                 sh 'touch .env.local'
-                // Stop running instance and remove old containers
                 sh 'docker-compose -f docker-compose-dev.yml down'
-                // Re-launch development container in background decoupled from live Part I
-                sh 'docker-compose -f docker-compose-dev.yml up -d'
+                sh 'docker-compose -f docker-compose-dev.yml up -d --build'
+                echo 'Waiting for application to stabilize...'
+                sh 'sleep 20'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Building Test Container...'
+                sh 'docker build -t medmcq-tests ./tests'
+                
+                echo 'Executing 15 Selenium Test Cases...'
+                // Run tests with increased shared memory to prevent Chrome crashes
+                sh 'docker run --rm --shm-size=2g --network medmcq-dev-deployment_default -e BASE_URL=${APP_URL} -v ${WORKSPACE}/tests:/app/results medmcq-tests pytest test_medmcq.py --junitxml=/app/results/results.xml || true'
+            }
+            post {
+                always {
+                    echo 'Publishing Test Results...'
+                    junit 'tests/results.xml'
+                }
             }
         }
     }
@@ -32,9 +49,29 @@ pipeline {
     post {
         always {
             echo 'Deployment Pipeline Execution Completed.'
+            script {
+                // Determine build status for email
+                def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
+                
+                // Send email with results to the collaborator/instructor
+                emailext (
+                    subject: "MedMCQ Build ${env.BUILD_NUMBER} - Status: ${buildStatus}",
+                    body: """
+                        <h2>Build ${env.BUILD_NUMBER} Result: ${buildStatus}</h2>
+                        <p>The automated test suite has finished executing.</p>
+                        <p><strong>Console Output:</strong> <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+                        <p><strong>Test Results:</strong> Attached to this email.</p>
+                        <br/>
+                        <p>Sent by MedMCQ DevOps Pipeline</p>
+                    """,
+                    to: 'qasimalik@gmail.com',
+                    attachmentsPattern: 'tests/results.xml',
+                    mimeType: 'text/html'
+                )
+            }
         }
         success {
-            echo 'Development System is successfully deployed and live on PORT 3001.'
+            echo 'Development System is successfully deployed, tested, and live on PORT 3001.'
         }
         failure {
             echo 'Deployment Pipeline Failed. Please check the logs.'
