@@ -34,8 +34,10 @@ pipeline {
                 sh 'docker build -t medmcq-tests ./tests'
                 
                 echo 'Executing 15 Selenium Test Cases...'
-                // Run tests with increased shared memory to prevent Chrome crashes
-                sh 'docker run --rm --shm-size=2g --network medmcq-dev-deployment_default -e BASE_URL=${APP_URL} -v ${WORKSPACE}/tests:/app/results medmcq-tests pytest test_medmcq.py --junitxml=/app/results/results.xml || true'
+                // Run tests and manually copy results out to avoid volume mounting issues in DinD
+                sh 'docker run --name test-container --shm-size=2g --network medmcq-dev-deployment_default -e BASE_URL=${APP_URL} medmcq-tests pytest test_medmcq.py --junitxml=results.xml || true'
+                sh 'docker cp test-container:/app/results.xml tests/results.xml'
+                sh 'docker rm test-container'
             }
             post {
                 always {
