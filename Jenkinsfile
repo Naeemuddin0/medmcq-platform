@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Ensuring Docker behaves correctly in Jenkins executing environment
-        DOCKER_BUILDKIT = 1
-        COMPOSE_DOCKER_CLI_BUILD = 1
+        DOCKER_BUILDKIT = 0
+        COMPOSE_DOCKER_CLI_BUILD = 0
         // Internal URL for the dev container within the Docker network
         APP_URL = "http://medmcq-web-dev:3000"
     }
