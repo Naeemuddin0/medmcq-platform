@@ -67,7 +67,7 @@ pipeline {
                             <br/>
                             <p>Sent by MedMCQ DevOps Pipeline</p>
                         """,
-                        to: 'qasimalik@gmail.com',
+                        to: 'qasimalik@gmail.com, uddinn874@gmail.com',
                         attachmentsPattern: 'tests/results.xml',
                         mimeType: 'text/html'
                     )
