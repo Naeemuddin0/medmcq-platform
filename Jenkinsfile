@@ -56,20 +56,24 @@ pipeline {
                 def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
                 
                 // Send email with results to the collaborator/instructor
-                emailext (
-                    subject: "MedMCQ Build ${env.BUILD_NUMBER} - Status: ${buildStatus}",
-                    body: """
-                        <h2>Build ${env.BUILD_NUMBER} Result: ${buildStatus}</h2>
-                        <p>The automated test suite has finished executing.</p>
-                        <p><strong>Console Output:</strong> <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-                        <p><strong>Test Results:</strong> Attached to this email.</p>
-                        <br/>
-                        <p>Sent by MedMCQ DevOps Pipeline</p>
-                    """,
-                    to: 'qasimalik@gmail.com',
-                    attachmentsPattern: 'tests/results.xml',
-                    mimeType: 'text/html'
-                )
+                try {
+                    emailext (
+                        subject: "MedMCQ Build ${env.BUILD_NUMBER} - Status: ${buildStatus}",
+                        body: """
+                            <h2>Build ${env.BUILD_NUMBER} Result: ${buildStatus}</h2>
+                            <p>The automated test suite has finished executing.</p>
+                            <p><strong>Console Output:</strong> <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+                            <p><strong>Test Results:</strong> Attached to this email.</p>
+                            <br/>
+                            <p>Sent by MedMCQ DevOps Pipeline</p>
+                        """,
+                        to: 'qasimalik@gmail.com',
+                        attachmentsPattern: 'tests/results.xml',
+                        mimeType: 'text/html'
+                    )
+                } catch (Exception e) {
+                    echo "Warning: Could not send email notification. Check SMTP settings. Error: ${e.message}"
+                }
             }
         }
         success {
