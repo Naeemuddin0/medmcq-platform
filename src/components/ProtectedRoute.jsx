@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }, [session, status, router, allowedRoles]);
 
   if (status === 'loading') {
-    return <div>Loading...</div>; // Or a more sophisticated loading spinner
+    return <div className="px-6 py-16 text-center text-ink-muted dark:text-white/60">Loading...</div>;
   }
 
   if (!session || (allowedRoles && !allowedRoles.includes(session.user?.role))) {

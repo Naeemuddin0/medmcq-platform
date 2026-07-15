@@ -4,61 +4,42 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
+  darkMode: 'media',
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-geist-sans)'],
-        mono: ['var(--font-geist-mono)'],
+        sans: ['var(--font-body)', 'Arial', 'Helvetica', 'sans-serif'],
+        serif: ['var(--font-display)', 'Georgia', 'serif'],
       },
       colors: {
-        indigo: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+        paper: {
+          DEFAULT: '#faf9f6',
+          dim: '#f2f0ea',
         },
-        fuchsia: {
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#a21caf',
+        ink: {
+          DEFAULT: '#161a1f',
+          muted: '#565f6b',
+          faint: '#8a92a0',
         },
-        cyan: {
-          400: '#22d3ee',
-          500: '#06b6d4',
+        line: {
+          DEFAULT: '#e3e0d8',
         },
-        emerald: {
-          400: '#34d399',
-          500: '#10b981',
+        accent: {
+          DEFAULT: '#0f6657',
+          soft: '#e4efe9',
+          dim: '#0b4d42',
         },
-        yellow: {
-          400: '#facc15',
-          500: '#eab308',
+        subject: {
+          anatomy: '#2f6690',
+          physiology: '#3a7d5c',
+          biochemistry: '#a5750c',
+          pathology: '#b0473f',
+          microbiology: '#6b4c9a',
+          pharmacology: '#a24b73',
         },
-        pink: {
-          400: '#f472b6',
-          500: '#ec4899',
-        },
-        gray: {
-          50: '#f9fafb',
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
-        },
-        white: '#ffffff',
-        black: '#000000',
+      },
+      maxWidth: {
+        page: '72rem',
       },
     },
   },

@@ -1,54 +1,103 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+
+const links = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/practice', label: 'Practice' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
 
 const Navigation = () => {
   const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
-      <nav
-        className="flex items-center justify-between px-8 py-4 mx-auto mt-4 max-w-7xl backdrop-blur-xl bg-white/60 dark:bg-gray-900/80 shadow-2xl rounded-2xl border border-white/30 dark:border-white/10"
-        style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)' }}
-      >
-        <Link href="/" className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 drop-shadow-lg tracking-tight">
+    <header className="fixed top-0 left-0 z-50 w-full border-b border-line bg-paper dark:border-white/10 dark:bg-[#10141a]">
+      <nav className="mx-auto flex max-w-page items-center justify-between px-6 py-4">
+        <Link href="/" className="font-serif text-2xl font-semibold tracking-tight text-ink dark:text-white">
           MedMCQ
         </Link>
-        <div className="flex space-x-6">
-          <Link href="/dashboard" className="relative px-4 py-2 font-semibold text-gray-800 dark:text-white rounded-lg transition-all duration-200 hover:bg-indigo-100/70 dark:hover:bg-indigo-900/40 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            Dashboard
-          </Link>
-          <Link href="/practice" className="relative px-4 py-2 font-semibold text-gray-800 dark:text-white rounded-lg transition-all duration-200 hover:bg-fuchsia-100/70 dark:hover:bg-fuchsia-900/40 hover:text-fuchsia-700 dark:hover:text-fuchsia-300 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
-            Practice
-          </Link>
-          <Link href="/about" className="relative px-4 py-2 font-semibold text-gray-800 dark:text-white rounded-lg transition-all duration-200 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 hover:text-emerald-700 dark:hover:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400">
-            About
-          </Link>
-          <Link href="/contact" className="relative px-4 py-2 font-semibold text-gray-800 dark:text-white rounded-lg transition-all duration-200 hover:bg-cyan-100/70 dark:hover:bg-cyan-900/40 hover:text-cyan-700 dark:hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400">
-            Contact
-          </Link>
-          {session ? (
-            <button
-              onClick={() => signOut()}
-              className="bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:from-indigo-600 hover:to-cyan-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+
+        <div className="hidden items-center gap-8 md:flex">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-ink-muted transition-colors hover:text-ink dark:text-white/60 dark:hover:text-white"
             >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          {session ? (
+            <button onClick={() => signOut()} className="btn-outline hidden text-sm sm:inline-flex">
               Sign Out
             </button>
           ) : (
             <>
-              <Link href="/login" className="px-4 py-2 font-semibold text-indigo-600 dark:text-indigo-300 hover:underline transition-colors duration-200">
+              <Link href="/login" className="hidden text-sm font-medium text-ink-muted hover:text-ink dark:text-white/60 dark:hover:text-white sm:inline">
                 Sign In
               </Link>
-              <Link href="/register" className="bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:from-indigo-600 hover:to-cyan-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              <Link href="/register" className="btn-primary hidden text-sm sm:inline-flex">
                 Register
               </Link>
             </>
           )}
+
+          <button
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-line text-ink dark:border-white/15 dark:text-white md:hidden"
+          >
+            <span className="sr-only">Menu</span>
+            {menuOpen ? (
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1 1L17 17M17 1L1 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            ) : (
+              <svg width="18" height="14" viewBox="0 0 18 14" fill="none"><path d="M0 1H18M0 7H18M0 13H18" stroke="currentColor" strokeWidth="1.5" /></svg>
+            )}
+          </button>
         </div>
       </nav>
+
+      {menuOpen && (
+        <div className="border-t border-line px-6 py-4 dark:border-white/10 md:hidden">
+          <div className="flex flex-col gap-4">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-medium text-ink-muted hover:text-ink dark:text-white/60 dark:hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
+            {session ? (
+              <button onClick={() => signOut()} className="btn-outline w-full text-sm">
+                Sign Out
+              </button>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-ink-muted hover:text-ink dark:text-white/60 dark:hover:text-white">
+                  Sign In
+                </Link>
+                <Link href="/register" onClick={() => setMenuOpen(false)} className="btn-primary w-full text-sm">
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
 
-export default Navigation; 
+export default Navigation;

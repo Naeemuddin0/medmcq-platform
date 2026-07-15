@@ -96,119 +96,100 @@ export default function ProfilePage() {
   };
 
   if (status === 'loading') {
-    return <div>Loading...</div>;
+    return <div className="px-6 py-16 text-center text-ink-muted dark:text-white/60">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50/80 via-indigo-100/60 to-cyan-50/40 dark:from-indigo-900 dark:via-blue-900 dark:to-cyan-900">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Profile Settings
-        </h1>
+    <div className="mx-auto max-w-2xl px-6 py-16">
+      <p className="eyebrow mb-3">Profile</p>
+      <h1 className="font-serif text-3xl font-semibold text-ink dark:text-white">
+        Profile settings
+      </h1>
 
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/50 rounded-lg">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/50 rounded-lg">
-            <p className="text-green-600 dark:text-green-400">{success}</p>
-          </div>
-        )}
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-6">Update Profile</h2>
-          <form onSubmit={handleProfileUpdate} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400"
-            >
-              Update Profile
-            </button>
-          </form>
+      {error && (
+        <div className="mt-6 rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20">
+          <p className="text-red-700 dark:text-red-400">{error}</p>
         </div>
+      )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-6">Change Password</h2>
-          <form onSubmit={handlePasswordUpdate} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Current Password
-              </label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                New Password
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400"
-            >
-              Change Password
-            </button>
-          </form>
+      {success && (
+        <div className="mt-6 rounded-md border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+          <p className="text-emerald-700 dark:text-emerald-400">{success}</p>
         </div>
+      )}
+
+      <div className="card mt-8 p-6">
+        <h2 className="font-serif text-lg font-semibold text-ink dark:text-white">Update Profile</h2>
+        <form onSubmit={handleProfileUpdate} className="mt-5 space-y-4">
+          <div>
+            <label className="field-label">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="field-input"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label className="field-label">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="field-input"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <button type="submit" disabled={isLoading} className="btn-primary">
+            Update Profile
+          </button>
+        </form>
+      </div>
+
+      <div className="card mt-6 p-6">
+        <h2 className="font-serif text-lg font-semibold text-ink dark:text-white">Change Password</h2>
+        <form onSubmit={handlePasswordUpdate} className="mt-5 space-y-4">
+          <div>
+            <label className="field-label">Current Password</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="field-input"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label className="field-label">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="field-input"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label className="field-label">Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="field-input"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <button type="submit" disabled={isLoading} className="btn-primary">
+            Change Password
+          </button>
+        </form>
       </div>
     </div>
   );
-} 
+}

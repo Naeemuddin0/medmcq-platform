@@ -1,13 +1,12 @@
-
-const ProgressBar = ({ progress }) => {
+const ProgressBar = ({ progress, color }) => {
   return (
-    <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700 shadow-inner">
+    <div className="h-2 w-full rounded-full bg-line dark:bg-white/10">
       <div
-        className="h-3 rounded-full bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-400 shadow"
-        style={{ width: `${progress}%`, transition: 'width 0.4s' }}
+        className="h-2 rounded-full transition-[width] duration-300"
+        style={{ width: `${progress}%`, backgroundColor: color || '#0f6657' }}
       ></div>
     </div>
   );
 };
 
-export default ProgressBar; 
+export default ProgressBar;
