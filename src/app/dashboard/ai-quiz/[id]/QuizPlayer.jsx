@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function QuizPlayer({ quiz }) {
@@ -8,6 +8,13 @@ export default function QuizPlayer({ quiz }) {
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+
+  // AI Tutor State
+  const [isTutorOpen, setIsTutorOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const chatEndRef = useRef(null);
 
   // Fallback in case quiz has no questions
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
@@ -35,10 +42,79 @@ export default function QuizPlayer({ quiz }) {
       setCurrentQuestionIdx((i) => i + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
+      setIsTutorOpen(false);
+      setChatMessages([]);
     } else {
       setFinished(true);
     }
   };
+
+  const handleAskTutor = async (e) => {
+    e?.preventDefault();
+    if (!chatInput.trim() || isStreaming) return;
+
+    const newMessage = { role: 'user', content: chatInput };
+    const newChatHistory = [...chatMessages, newMessage];
+    
+    setChatMessages(newChatHistory);
+    setChatInput('');
+    setIsStreaming(true);
+
+    try {
+      // Add a temporary assistant message that will be updated
+      setChatMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+      const response = await fetch('/api/ai-tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newChatHistory,
+          context: {
+            question: currentQ.question,
+            options: Object.values(currentQ.options),
+            correctAnswer: currentQ.correctAnswer,
+            userSelected: selectedAnswer,
+            explanation: currentQ.explanation
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let streamedResponse = '';
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        streamedResponse += chunkValue;
+        
+        setChatMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: streamedResponse };
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setChatMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { role: 'assistant', content: "Sorry, I'm having trouble connecting right now." };
+        return updated;
+      });
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
 
   if (finished) {
     return (
@@ -104,18 +180,76 @@ export default function QuizPlayer({ quiz }) {
       </div>
 
       {showExplanation && (
-        <div className={`p-6 rounded-lg mb-6 border-l-4 ${selectedAnswer === currentQ.correctAnswer ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
-          <h3 className="font-bold mb-2 flex items-center">
-            {selectedAnswer === currentQ.correctAnswer ? (
-              <span className="text-green-700">✅ Correct!</span>
-            ) : (
-              <span className="text-red-700">❌ Incorrect</span>
+        <div className={`p-6 rounded-lg mb-6 border-l-4 shadow-sm ${selectedAnswer === currentQ.correctAnswer ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="font-bold text-lg flex items-center">
+              {selectedAnswer === currentQ.correctAnswer ? (
+                <span className="text-green-700">✅ Correct!</span>
+              ) : (
+                <span className="text-red-700">❌ Incorrect</span>
+              )}
+            </h3>
+            
+            {!isTutorOpen && (
+              <button 
+                onClick={() => setIsTutorOpen(true)}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-indigo-700 transition flex items-center shadow-md"
+              >
+                <span>🧑‍⚕️ Ask AI Tutor</span>
+              </button>
             )}
-          </h3>
-          <p className="text-gray-800 whitespace-pre-line leading-relaxed">
-            <span className="font-semibold block mb-1">Explanation:</span>
-            {currentQ.explanation}
-          </p>
+          </div>
+          
+          {!isTutorOpen ? (
+             <p className="text-gray-800 whitespace-pre-line leading-relaxed">
+               <span className="font-semibold block mb-1">Explanation:</span>
+               {currentQ.explanation}
+             </p>
+          ) : (
+            <div className="mt-4 bg-white rounded-lg border border-gray-200 shadow-inner overflow-hidden flex flex-col h-96">
+              <div className="bg-indigo-600 text-white px-4 py-3 font-semibold flex justify-between items-center">
+                <span>Interactive AI Tutor (Socratic Mode)</span>
+                <button onClick={() => setIsTutorOpen(false)} className="text-indigo-200 hover:text-white text-xl leading-none">&times;</button>
+              </div>
+              
+              <div className="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-4">
+                <div className="flex w-full">
+                  <div className="bg-white border border-gray-200 text-gray-800 p-3 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm">
+                    Hi! I'm your AI Medical Tutor. I'm here to help you reason through this question. What part of the explanation or options are you unsure about?
+                  </div>
+                </div>
+                
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`p-3 rounded-2xl max-w-[85%] shadow-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm'}`}>
+                      {msg.content || <span className="animate-pulse">Thinking...</span>}
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+              
+              <form onSubmit={handleAskTutor} className="p-3 bg-white border-t border-gray-200 flex gap-2">
+                <input 
+                  type="text" 
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  disabled={isStreaming}
+                  placeholder="Ask a question (e.g., Why is B wrong?)"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button 
+                  type="submit"
+                  disabled={!chatInput.trim() || isStreaming}
+                  className="bg-indigo-600 text-white p-2 w-10 h-10 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                  </svg>
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       )}
 
