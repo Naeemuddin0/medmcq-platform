@@ -31,6 +31,10 @@ export async function POST(request) {
     }
     if (isCorrect) {
       progress.correctCount = (progress.correctCount || 0) + 1;
+    } else {
+      if (!progress.mistakes.some(id => id.equals(qid))) {
+        progress.mistakes.push(qid);
+      }
     }
     await progress.save();
 

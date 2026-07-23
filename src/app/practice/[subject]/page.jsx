@@ -18,6 +18,7 @@ const subjects = {
 export default function SubjectPage({ params }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [isAdaptiveMode, setIsAdaptiveMode] = useState(false);
   const [question, setQuestion] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showExplanation, setShowExplanation] = useState(false);
@@ -39,18 +40,18 @@ export default function SubjectPage({ params }) {
     if (subject && session) {
       fetchQuestion();
     }
-  }, [subject, session]);
+  }, [subject, session, isAdaptiveMode]);
 
   const fetchQuestion = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/practice?subject=${subject}`);
+      const response = await fetch(`/api/practice?subject=${subject}&adaptive=${isAdaptiveMode}`);
       const data = await response.json();
 
       if (response.ok) {
         if (data.completed) {
           setQuestion(null);
-          setError('You have completed all questions for this subject.');
+          setError('You have completed all questions for this subject in the current mode.');
         } else {
           setQuestion(data.question);
           setProgress(data.progress);
@@ -140,9 +141,20 @@ export default function SubjectPage({ params }) {
             ← Back to Subjects
           </button>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          {subjects[subject]} Practice
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            {subjects[subject]} Practice
+          </h1>
+          <button
+            onClick={() => {
+              setError('');
+              setIsAdaptiveMode(!isAdaptiveMode);
+            }}
+            className={`px-4 py-2 rounded-full font-bold transition-all shadow-md flex items-center ${isAdaptiveMode ? 'bg-indigo-600 text-white border-2 border-indigo-700' : 'bg-gray-200 text-gray-700 border-2 border-gray-300'}`}
+          >
+            {isAdaptiveMode ? '🧠 Adaptive Mode: ON' : 'Adaptive Mode: OFF'}
+          </button>
+        </div>
 
         <div className="mb-8">
           <ProgressBar progress={(progress / total) * 100} />

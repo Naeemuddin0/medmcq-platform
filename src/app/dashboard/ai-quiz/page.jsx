@@ -62,11 +62,11 @@ export default function AIQuizBuilder() {
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Document (PDF, TXT, DOCX, PPTX)
+            Upload Document or Clinical Image (PDF, TXT, DOCX, PPTX, PNG, JPG)
           </label>
           <input 
             type="file" 
-            accept=".pdf,.txt,.docx,.pptx"
+            accept=".pdf,.txt,.docx,.pptx,.png,.jpg,.jpeg"
             onChange={handleFileChange}
             className="block w-full text-sm text-gray-500
               file:mr-4 file:py-2 file:px-4

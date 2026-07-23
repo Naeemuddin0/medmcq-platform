@@ -114,6 +114,27 @@ export default function DashboardPage() {
             </div>
           </Link>
         </div>
+
+        <div className="mb-10">
+          <Link
+            href="/dashboard/analytics"
+            className="block rounded-2xl shadow-xl p-8 transition-transform duration-200 hover:scale-[1.02] bg-gradient-to-r from-teal-400 via-emerald-500 to-green-500 text-white border border-white/20"
+            style={{
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2 drop-shadow-md">📊 Performance Analytics & AI Insights</h2>
+                <p className="text-white/90 text-lg">
+                  View your subject accuracy and get a personalized AI study plan.
+                </p>
+              </div>
+              <div className="hidden md:block text-5xl">📈</div>
+            </div>
+          </Link>
+        </div>
+
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Start Practicing</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {subjects.map((subject) => (

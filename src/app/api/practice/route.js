@@ -22,26 +22,56 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Subject is required' }, { status: 400 });
   }
 
-  try {
-    // Get or create progress record
-    let progress = await Progress.findOne({ userId, subject });
-    if (!progress) {
-      progress = new Progress({ userId, subject });
-      await progress.save();
-    }
+    const adaptive = request.nextUrl.searchParams.get('adaptive') === 'true';
 
-    // Get next question
-    const nextQuestion = await MCQ.findOne({
-      subject_name: subject,
-      _id: { $nin: progress.completedQuestions }
-    }).skip(progress.currentIndex);
-
-    if (!nextQuestion) {
-      return NextResponse.json({ 
-        message: 'No more questions available', 
-        completed: true 
-      });
-    }
+    try {
+      // Get or create progress record
+      let progress = await Progress.findOne({ userId, subject }).populate('mistakes');
+      if (!progress) {
+        progress = new Progress({ userId, subject });
+        await progress.save();
+      }
+  
+      let nextQuestion = null;
+  
+      // Adaptive Logic
+      if (adaptive && progress.mistakes && progress.mistakes.length > 0) {
+        // Find most common topic among mistakes
+        const topicCounts = {};
+        for (const mistake of progress.mistakes) {
+          if (mistake.topic_name) {
+            topicCounts[mistake.topic_name] = (topicCounts[mistake.topic_name] || 0) + 1;
+          }
+        }
+        
+        // Sort topics by frequency (descending)
+        const sortedTopics = Object.keys(topicCounts).sort((a, b) => topicCounts[b] - topicCounts[a]);
+        
+        // Try to find an incomplete question from the weakest topic
+        for (const weakTopic of sortedTopics) {
+          nextQuestion = await MCQ.findOne({
+            subject_name: subject,
+            topic_name: weakTopic,
+            _id: { $nin: progress.completedQuestions }
+          });
+          if (nextQuestion) break;
+        }
+      }
+  
+      // Fallback or regular logic
+      if (!nextQuestion) {
+        nextQuestion = await MCQ.findOne({
+          subject_name: subject,
+          _id: { $nin: progress.completedQuestions }
+        }).skip(progress.currentIndex);
+      }
+  
+      if (!nextQuestion) {
+        return NextResponse.json({ 
+          message: 'No more questions available', 
+          completed: true 
+        });
+      }
 
     // Build options array and correct answer
     const options = [

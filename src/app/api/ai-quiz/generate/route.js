@@ -33,28 +33,31 @@ export async function POST(request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    const fileName = file.name.toLowerCase();
+    const isImage = fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+    
     let text = '';
     
-    const fileName = file.name.toLowerCase();
-    if (file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
-      const pdfData = await pdfParse(buffer);
-      text = pdfData.text;
-    } else if (fileName.endsWith('.docx')) {
-      const result = await mammoth.extractRawText({ buffer });
-      text = result.value;
-    } else if (fileName.endsWith('.pptx')) {
-      // For officeParser to work with buffer, we must specify the fileType
-      text = await officeParser.parseOffice(buffer, { fileType: 'pptx' });
-    } else {
-      text = buffer.toString('utf-8');
-    }
+    if (!isImage) {
+      if (file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
+        const pdfData = await pdfParse(buffer);
+        text = pdfData.text;
+      } else if (fileName.endsWith('.docx')) {
+        const result = await mammoth.extractRawText({ buffer });
+        text = result.value;
+      } else if (fileName.endsWith('.pptx')) {
+        text = await officeParser.parseOffice(buffer, { fileType: 'pptx' });
+      } else {
+        text = buffer.toString('utf-8');
+      }
 
-    if (!text || text.trim().length === 0) {
-      return NextResponse.json({ error: 'Could not extract text from file' }, { status: 400 });
+      if (!text || text.trim().length === 0) {
+        return NextResponse.json({ error: 'Could not extract text from file' }, { status: 400 });
+      }
     }
 
     let systemPrompt = `You are an expert medical educator and AI Quiz Builder.
-Your task is to read the provided medical text and generate a high-quality Multiple Choice Question (MCQ) quiz based on it.
+Your task is to ${isImage ? 'analyze the provided clinical image (like an X-ray, ECG, or Dermatology photo)' : 'read the provided medical text'} and generate a high-quality Multiple Choice Question (MCQ) quiz based on it.
 You must return the response strictly as a JSON object matching this schema:
 {
   "title": "A fitting title for the quiz based on the document",
@@ -79,18 +82,37 @@ You must return the response strictly as a JSON object matching this schema:
       systemPrompt += `\nProvide comprehensive coverage of the document. Distribute the questions evenly across different sections of the text. Generate exactly 10 questions.`;
     }
 
-    const completion = await groq.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Here is the document text:\n\n${text}` }
-      ],
-      model: 'llama3-70b-8192',
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
-    });
+    let aiResponse = "";
 
-    const aiResponse = completion.choices[0]?.message?.content;
-    
+    if (isImage) {
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const mimeType = fileName.endsWith('.png') ? 'image/png' : 'image/jpeg';
+      
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-pro',
+        contents: [
+            { role: 'user', parts: [
+                { text: systemPrompt },
+                { inlineData: { mimeType, data: buffer.toString('base64') } }
+            ]}
+        ],
+        config: { responseMimeType: "application/json" }
+      });
+      aiResponse = response.text;
+    } else {
+      const completion = await groq.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `Here is the document text:\n\n${text}` }
+        ],
+        model: 'llama3-70b-8192',
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
+      });
+      aiResponse = completion.choices[0]?.message?.content;
+    }
+
     if (!aiResponse) {
        throw new Error('AI returned an empty response');
     }
