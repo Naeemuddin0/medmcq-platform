@@ -5,6 +5,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
+ENV NODE_OPTIONS="--max-old-space-size=400"
 RUN npm ci
 
 # Rebuild the source code only when needed
@@ -17,6 +18,7 @@ COPY .env.local* ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV MONGODB_URI="mongodb://localhost:27017/dummy"
+ENV NODE_OPTIONS="--max-old-space-size=400"
 RUN npm run build
 
 # Production image, copy all the files and run next

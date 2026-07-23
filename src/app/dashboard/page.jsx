@@ -94,6 +94,26 @@ export default function DashboardPage() {
             );
           })}
         </div>
+        
+        <div className="mb-10">
+          <Link
+            href="/dashboard/ai-quiz"
+            className="block rounded-2xl shadow-xl p-8 transition-transform duration-200 hover:scale-[1.02] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border border-white/20"
+            style={{
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2 drop-shadow-md">✨ AI Quiz Builder</h2>
+                <p className="text-white/90 text-lg">
+                  Upload your own medical PDFs or notes and generate custom MCQs instantly using AI.
+                </p>
+              </div>
+              <div className="hidden md:block text-5xl">📄 ➡️ 🧠</div>
+            </div>
+          </Link>
+        </div>
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Start Practicing</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {subjects.map((subject) => (

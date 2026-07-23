@@ -12,7 +12,6 @@ services:
     env_file:
       - .env.local
     environment:
-      - MONGODB_URI=mongodb://db:27017/medmcq-db
       # Using standard EC2 IP for NextAuth
       - NEXTAUTH_URL=http://ec2-204-236-199-231.compute-1.amazonaws.com:3000
     depends_on:
