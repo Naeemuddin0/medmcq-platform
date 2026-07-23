@@ -15,12 +15,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable}`}>
       <head>
-        <title>MedMCQ</title>
+        <title>Medita</title>
         <meta name="description" content="AI-powered medical MCQ practice platform" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>
+      <body className={inter.className}>
         <AuthProvider>
           <Navigation />
           <main className="min-h-screen bg-gray-100 dark:bg-gray-900">

@@ -11,6 +11,15 @@ module.exports = {
         sans: ['var(--font-geist-sans)'],
         mono: ['var(--font-geist-mono)'],
       },
+      borderRadius: {
+        sm: '6px',
+        DEFAULT: '6px',
+        md: '6px',
+        lg: '6px',
+        xl: '6px',
+        '2xl': '6px',
+        '3xl': '6px',
+      },
       colors: {
         indigo: {
           50: '#eef2ff',

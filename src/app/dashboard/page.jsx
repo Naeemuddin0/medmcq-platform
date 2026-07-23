@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 const subjects = [
-  { id: 'Anatomy', name: 'Anatomy', accent: 'border-blue-400 shadow-blue-200' },
-  { id: 'Physiology', name: 'Physiology', accent: 'border-green-400 shadow-green-200' },
-  { id: 'Biochemistry', name: 'Biochemistry', accent: 'border-yellow-400 shadow-yellow-200' },
-  { id: 'Pathology', name: 'Pathology', accent: 'border-red-400 shadow-red-200' },
-  { id: 'Microbiology', name: 'Microbiology', accent: 'border-purple-400 shadow-purple-200' },
-  { id: 'Pharmacology', name: 'Pharmacology', accent: 'border-pink-400 shadow-pink-200' }
+  { id: 'Anatomy', name: 'Anatomy', border: 'border-blue-500' },
+  { id: 'Physiology', name: 'Physiology', border: 'border-green-500' },
+  { id: 'Biochemistry', name: 'Biochemistry', border: 'border-yellow-500' },
+  { id: 'Pathology', name: 'Pathology', border: 'border-red-500' },
+  { id: 'Microbiology', name: 'Microbiology', border: 'border-purple-500' },
+  { id: 'Pharmacology', name: 'Pharmacology', border: 'border-pink-500' }
 ];
 
 export default function DashboardPage() {
@@ -44,16 +44,17 @@ export default function DashboardPage() {
   }, [status]);
 
   if (status === 'loading' || loading) {
-    return <div>Loading...</div>;
+    return <div className="p-8 font-semibold text-gray-700">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50/80 via-indigo-100/60 to-cyan-50/40 dark:from-indigo-900 dark:via-blue-900 dark:to-cyan-900">
+    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-8">
           Welcome, {session?.user?.name || 'User'}
         </h1>
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Your Progress</h2>
+        
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Your Progress</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {subjects.map((subject) => {
             const subjProgress = progress[subject.id] || { completed: 0, total: 0, correctCount: 0 };
@@ -65,52 +66,33 @@ export default function DashboardPage() {
             return (
               <div
                 key={subject.id}
-                className={
-                  `backdrop-blur-xl shadow-2xl rounded-2xl p-6 mb-4 transition-transform duration-200 hover:scale-105 border-2 ${subject.accent}`
-                }
-                style={{
-                  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.14)',
-                  borderWidth: '2px',
-                  background: `linear-gradient(135deg, ${
-                    subject.id === 'Anatomy' ? 'rgba(99,102,241,0.18),rgba(6,182,212,0.10)' :
-                    subject.id === 'Physiology' ? 'rgba(16,185,129,0.18),rgba(59,130,246,0.10)' :
-                    subject.id === 'Biochemistry' ? 'rgba(250,204,21,0.18),rgba(139,92,246,0.10)' :
-                    subject.id === 'Pathology' ? 'rgba(239,68,68,0.18),rgba(59,130,246,0.10)' :
-                    subject.id === 'Microbiology' ? 'rgba(168,85,247,0.18),rgba(6,182,212,0.10)' :
-                    'rgba(99,102,241,0.18),rgba(6,182,212,0.10)'
-                  })`,
-                  backgroundBlendMode: 'overlay',
-                }}
+                className={`bg-white dark:bg-gray-800 rounded-[6px] p-6 transition-transform hover:-translate-y-1 shadow-sm border-l-4 ${subject.border} border-y border-r border-gray-200 dark:border-gray-700`}
               >
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 drop-shadow">{subject.name}</h3>
-                <div className="text-gray-800 dark:text-white/90 mb-2">{subjProgress.completed} / {subjProgress.total} completed</div>
-                <div className="w-full bg-gray-200 dark:bg-white/20 rounded-full h-2 mb-2">
-                  <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 h-2 rounded-full" style={{ width: `${percent}%` }}></div>
+                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">{subject.name}</h3>
+                <div className="text-gray-700 dark:text-gray-300 mb-2 font-medium">{subjProgress.completed} / {subjProgress.total} completed</div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-[6px] h-2 mb-2 border border-gray-300 dark:border-gray-600">
+                  <div className="bg-gray-800 dark:bg-gray-200 h-2 rounded-[6px]" style={{ width: `${percent}%` }}></div>
                 </div>
-                <div className="text-gray-700 dark:text-white/80 text-sm">{percent}% complete</div>
-                <div className="text-gray-700 dark:text-white/80 text-sm">Correctness: {correctness}%</div>
-                <div className="text-gray-700 dark:text-white/80 text-sm">Preparation: {prep}</div>
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-semibold">{percent}% complete</div>
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-semibold">Correctness: {correctness}%</div>
+                <div className="text-gray-600 dark:text-gray-400 text-sm font-semibold">Preparation: {prep}</div>
               </div>
             );
           })}
         </div>
         
-        <div className="mb-10">
+        <div className="mb-6">
           <Link
             href="/dashboard/ai-quiz"
-            className="block rounded-2xl shadow-xl p-8 transition-transform duration-200 hover:scale-[1.02] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border border-white/20"
-            style={{
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
-            }}
+            className="block bg-gray-900 dark:bg-gray-800 rounded-[6px] p-8 transition-colors hover:bg-gray-800 dark:hover:bg-gray-700 border border-transparent dark:border-gray-600 shadow-sm text-white"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold mb-2 drop-shadow-md">✨ AI Quiz Builder</h2>
-                <p className="text-white/90 text-lg">
-                  Upload your own medical PDFs or notes and generate custom MCQs instantly using AI.
+                <h2 className="text-2xl font-black mb-2">AI Quiz Builder</h2>
+                <p className="text-gray-300 text-lg font-medium">
+                  Upload your own medical PDFs or clinical images and generate custom MCQs instantly.
                 </p>
               </div>
-              <div className="hidden md:block text-5xl">📄 ➡️ 🧠</div>
             </div>
           </Link>
         </div>
@@ -118,49 +100,29 @@ export default function DashboardPage() {
         <div className="mb-10">
           <Link
             href="/dashboard/analytics"
-            className="block rounded-2xl shadow-xl p-8 transition-transform duration-200 hover:scale-[1.02] bg-gradient-to-r from-teal-400 via-emerald-500 to-green-500 text-white border border-white/20"
-            style={{
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
-            }}
+            className="block bg-white dark:bg-gray-800 rounded-[6px] p-8 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm text-gray-900 dark:text-white"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold mb-2 drop-shadow-md">📊 Performance Analytics & AI Insights</h2>
-                <p className="text-white/90 text-lg">
+                <h2 className="text-2xl font-black mb-2">Performance Analytics & AI Insights</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
                   View your subject accuracy and get a personalized AI study plan.
                 </p>
               </div>
-              <div className="hidden md:block text-5xl">📈</div>
             </div>
           </Link>
         </div>
 
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Start Practicing</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Start Practicing</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {subjects.map((subject) => (
             <Link
               key={subject.id}
               href={`/practice/${subject.id}`}
-              className={
-                `rounded-2xl shadow-xl p-6 mb-4 transition-transform duration-200 hover:scale-105 ` +
-                `glass-card`
-              }
-              style={{
-                backdropFilter: 'blur(8px)',
-                background: `linear-gradient(135deg, ${
-                  subject.id === 'Anatomy' ? 'rgba(59,130,246,0.7),rgba(59,130,246,0.3)' :
-                  subject.id === 'Physiology' ? 'rgba(34,197,94,0.7),rgba(34,197,94,0.3)' :
-                  subject.id === 'Biochemistry' ? 'rgba(251,191,36,0.7),rgba(251,191,36,0.3)' :
-                  subject.id === 'Pathology' ? 'rgba(239,68,68,0.7),rgba(239,68,68,0.3)' :
-                  subject.id === 'Microbiology' ? 'rgba(168,85,247,0.7),rgba(168,85,247,0.3)' :
-                  'rgba(236,72,153,0.7),rgba(236,72,153,0.3)'
-                })`,
-                border: '1px solid rgba(255,255,255,0.18)',
-                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
-              }}
+              className={`bg-white dark:bg-gray-800 rounded-[6px] shadow-sm p-6 transition-transform hover:-translate-y-1 border-l-4 ${subject.border} border-y border-r border-gray-200 dark:border-gray-700`}
             >
-              <h2 className="text-xl font-semibold text-white mb-2 drop-shadow">{subject.name}</h2>
-              <p className="text-white/80">
+              <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">{subject.name}</h2>
+              <p className="text-gray-600 dark:text-gray-400 font-medium">
                 Start practicing {subject.name.toLowerCase()} questions
               </p>
             </Link>
@@ -169,4 +131,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-} 
+}

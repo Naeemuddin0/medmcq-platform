@@ -100,49 +100,49 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50/80 via-indigo-100/60 to-cyan-50/40 dark:from-indigo-900 dark:via-blue-900 dark:to-cyan-900">
+    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-8">
           Profile Settings
         </h1>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/50 rounded-lg">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/50 rounded-[6px] border border-red-200 dark:border-red-800">
+            <p className="text-red-600 dark:text-red-400 font-bold">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/50 rounded-lg">
-            <p className="text-green-600 dark:text-green-400">{success}</p>
+          <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/50 rounded-[6px] border border-green-200 dark:border-green-800">
+            <p className="text-green-600 dark:text-green-400 font-bold">{success}</p>
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-6">Update Profile</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-[6px] shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+          <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6">Update Profile</h2>
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-900 dark:text-gray-300 font-bold mb-2">
                 Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
+                className="w-full p-3 rounded-[6px] border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                 required
                 disabled={isLoading}
               />
             </div>
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-900 dark:text-gray-300 font-bold mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
+                className="w-full p-3 rounded-[6px] border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                 required
                 disabled={isLoading}
               />
@@ -150,51 +150,51 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400"
+              className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold px-6 py-2 rounded-[6px] hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-60 transition-colors"
             >
               Update Profile
             </button>
           </form>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-6">Change Password</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-[6px] shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6">Change Password</h2>
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-900 dark:text-gray-300 font-bold mb-2">
                 Current Password
               </label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
+                className="w-full p-3 rounded-[6px] border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                 required
                 disabled={isLoading}
               />
             </div>
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-900 dark:text-gray-300 font-bold mb-2">
                 New Password
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
+                className="w-full p-3 rounded-[6px] border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                 required
                 disabled={isLoading}
               />
             </div>
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-900 dark:text-gray-300 font-bold mb-2">
                 Confirm New Password
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:border-indigo-400"
+                className="w-full p-3 rounded-[6px] border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                 required
                 disabled={isLoading}
               />
@@ -202,7 +202,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400"
+              className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold px-6 py-2 rounded-[6px] hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-60 transition-colors"
             >
               Change Password
             </button>
